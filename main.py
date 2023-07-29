@@ -1,6 +1,8 @@
 from pkg.plugin.models import *
 from pkg.plugin.host import EventContext, PluginHost
 
+import re
+
 # 注册插件
 @register(name="Webwlkr", description="基于GPT的函数调用能力，为QChatGPT提供联网功能", version="0.1", author="RockChinQ")
 class WebwlkrPlugin(Plugin):
@@ -10,28 +12,45 @@ class WebwlkrPlugin(Plugin):
     def __init__(self, plugin_host: PluginHost):
         pass
 
-    @on(ContentFunction)
-    def visit_page(lnk: str):
-        """Visit the provided link and return the plain text content.
-        
+    @func("access_the_web")
+    def _(url: str, brief_len: int):
+        """Call this function to search about the question before you answer any questions.
+        - Do not search through baidu.com at any time.
+        - If you need to search somthing, visit https://www.google.com/search?q=xxx.
+        - If user ask you to open a url (start with http:// or https://), visit it directly.
+        - Summary the plain content result by yourself, DO NOT directly output anything in the result you got.
+
         Args:
-            lnk(str): The link to visit.
+            url(str): url to visit
+            brief_len(int): max length of the plain text content, recommend 1024-4096, prefer 4096
 
         Returns:
-            str: The plain text content of the page.
+            str: plain text content of the web page or error message(starts with 'error:')
         """
-        import requests
-        from bs4 import BeautifulSoup
+        try:
+            import requests
+            from bs4 import BeautifulSoup
 
-        r = requests.get(lnk)
-        soup = BeautifulSoup(r.text, 'html.parser')
+            r = requests.get(
+                url,
+                timeout=10,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.183"
+                }
+            )
+            soup = BeautifulSoup(r.text, 'html.parser')
 
-        s = soup.get_text()
+            s = soup.get_text()
 
-        if len(s) >= 256:
-            return s[:256]
+            # 删除多余的空行或仅有\t和空格的行
+            s = re.sub(r'\n\s*\n', '\n', s)
 
-        return s
+            if len(s) >= brief_len:
+                return s[:brief_len]
+
+            return s
+        except Exception as e:
+            return "error visit web:{}".format(e)
 
     # 插件卸载时触发
     def __del__(self):
