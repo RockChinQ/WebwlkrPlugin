@@ -1,13 +1,19 @@
-# HelloPlugin
+# WebwlkrPlugin
 
-[QChatGPT](https://github.com/RockChinQ/QChatGPT) 项目的示例插件和模板  
-使用方法见[QChatGPT项目wiki](https://github.com/RockChinQ/QChatGPT/wiki/%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8)
+[QChatGPT 项目](https://github.com/RockChinQ/QChatGPT)的联网插件，基于GPT的Function Calling功能实现的类似ChatGPT的`WebPilot`插件的功能。
 
-## 依赖处理
+![Webwlkr插件](https://github.com/RockChinQ/QChatGPT/blob/master/res/screenshots/webwlkr_plugin.png?raw=true)
 
-请将此插件依赖的Python库添加到requirements.txt文件内，以便主程序自动安装/升级此插件时解决依赖
+## 安装
 
-## 发布
+配置完成 [QChatGPT](https://github.com/RockChinQ/QChatGPT) 主程序后，向机器人发送命令`!version`确保主程序版本高于`v2.5.0`之后，向机器人发送以下命令安装插件
 
-推荐以储存库地址的形式发布插件，便于用户[自动安装](https://github.com/RockChinQ/QChatGPT/wiki/%E6%8F%92%E4%BB%B6%E4%BD%BF%E7%94%A8#%E5%82%A8%E5%AD%98%E5%BA%93%E5%85%8B%E9%9A%86%E6%8E%A8%E8%8D%90)  
-欢迎以PR或issue的形式投稿您的插件到[主程序文档](https://github.com/RockChinQ/QChatGPT#%E6%8F%92%E4%BB%B6%E7%94%9F%E6%80%81)
+```
+!plugin get https://github.com/RockChinQ/WebwlkrPlugin
+```
+
+重启机器人程序即可使用
+
+## 使用
+
+可以直接发送链接给机器人让它访问并总结内容。
