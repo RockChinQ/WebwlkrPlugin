@@ -1,5 +1,6 @@
 from pkg.plugin.models import *
 from pkg.plugin.host import EventContext, PluginHost
+from .mux import process
 
 import re
 
@@ -28,27 +29,7 @@ class WebwlkrPlugin(Plugin):
             str: plain text content of the web page or error message(starts with 'error:')
         """
         try:
-            import requests
-            from bs4 import BeautifulSoup
-
-            r = requests.get(
-                url,
-                timeout=10,
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.183"
-                }
-            )
-            soup = BeautifulSoup(r.text, 'html.parser')
-
-            s = soup.get_text()
-
-            # 删除多余的空行或仅有\t和空格的行
-            s = re.sub(r'\n\s*\n', '\n', s)
-
-            if len(s) >= brief_len:
-                return s[:brief_len]
-
-            return s
+            return process(url, brief_len)
         except Exception as e:
             return "error visit web:{}".format(e)
 
