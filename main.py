@@ -5,7 +5,7 @@ from .mux import process
 import re
 
 # 注册插件
-@register(name="Webwlkr", description="基于GPT的函数调用能力，为QChatGPT提供联网功能", version="0.1", author="RockChinQ")
+@register(name="Webwlkr", description="基于GPT的函数调用能力，为QChatGPT提供联网功能", version="0.1.1", author="RockChinQ")
 class WebwlkrPlugin(Plugin):
 
     # 插件加载时触发
