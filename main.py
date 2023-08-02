@@ -1,17 +1,43 @@
 from pkg.plugin.models import *
 from pkg.plugin.host import EventContext, PluginHost
-from .mux import process
 
+import logging
 import re
+import os
+import shutil
+import yaml
+
+
+from . import mux, webpilot
+
+backend_mapping = {
+    "webpilot": webpilot.process,
+    "native": mux.process,
+}
+
+process: callable = None
+
 
 # 注册插件
 @register(name="Webwlkr", description="基于GPT的函数调用能力，为QChatGPT提供联网功能", version="0.1.1", author="RockChinQ")
 class WebwlkrPlugin(Plugin):
 
+    cfg: dict = None
+
     # 插件加载时触发
     # plugin_host (pkg.plugin.host.PluginHost) 提供了与主程序交互的一些方法，详细请查看其源码
     def __init__(self, plugin_host: PluginHost):
-        pass
+        global process
+        # 检查webwlkr.yaml是否存在
+        if not os.path.exists("webwlkr.yaml"):
+            shutil.copyfile("plugins/WebwlkrPlugin/config-template.yaml", "webwlkr.yaml")
+        
+        # 读取配置文件
+        with open("webwlkr.yaml", "r", encoding="utf-8") as f:
+            self.cfg = yaml.load(f, Loader=yaml.FullLoader)
+
+        process = backend_mapping[self.cfg["backend"]]
+
 
     @func("access_the_web")
     def _(url: str, brief_len: int):
@@ -31,6 +57,7 @@ class WebwlkrPlugin(Plugin):
         try:
             return process(url, brief_len)
         except Exception as e:
+            logging.error("[Webwlkr] error visit web: {}".format(e))
             return "error visit web:{}".format(e)
 
     # 插件卸载时触发
