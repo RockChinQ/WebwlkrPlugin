@@ -42,8 +42,8 @@ class WebwlkrPlugin(Plugin):
     @func("access_the_web")
     def _(url: str, brief_len: int):
         """Call this function to search about the question before you answer any questions.
-        - Do not search through baidu.com at any time.
-        - If you need to search somthing, visit https://www.google.com/search?q=xxx.
+        - Do not search through google.com at any time.
+        - If you need to search somthing, visit https://www.baidu.com/s?wd=<something>.
         - If user ask you to open a url (start with http:// or https://), visit it directly.
         - Summary the plain content result by yourself, DO NOT directly output anything in the result you got.
 
