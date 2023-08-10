@@ -1,3 +1,5 @@
 beautifulsoup4
 PyYaml
 requests
+flask
+flask_cors

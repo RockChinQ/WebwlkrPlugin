@@ -7,8 +7,10 @@ import os
 import shutil
 import yaml
 
+from .sites import mux
 
-from . import mux, webpilot
+
+from . import webpilot
 
 backend_mapping = {
     "webpilot": webpilot.process,
@@ -40,19 +42,18 @@ class WebwlkrPlugin(Plugin):
 
 
     @func("access_the_web")
-    def _(url: str, brief_len: int):
+    def _(url: str, brief_len: int=4096):
         """Call this function to search about the question before you answer any questions.
         - Do not search through google.com at any time.
         - If you need to search somthing, visit https://www.sogou.com/web?query=<something>.
         - If user ask you to open a url (start with http:// or https://), visit it directly.
         - Summary the plain content result by yourself, DO NOT directly output anything in the result you got.
+        Returns: {"type": "object","properties": {"status_code": {"type": "integer","description": "The status code of the response."},"keywords": {"type": "string","description": "The keywords of the web page."},"og_title": {"type": "string","description": "The title of the web page."},"og_description": {"type": "string","description": "The description of the web page."},"og_type": {"type": "string","description": "The type of the web page."},"og_site_name": {"type": "string","description": "The site name of the web page."},"author": {"type": "string","description": "The author of the web page."},"content": {"type": "string","description": "The content of the web page to be summarized."}}}
+
 
         Args:
             url(str): url to visit
             brief_len(int): max length of the plain text content, recommend 1024-4096, prefer 4096
-
-        Returns:
-            str: plain text content of the web page or error message(starts with 'error:')
         """
         try:
             return process(url, brief_len)

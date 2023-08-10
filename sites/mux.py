@@ -1,10 +1,11 @@
 import re
 import logging
+import json
 
-from .sites import model
+from . import model
 
 
-def process(url: str, brief_len: int, **kwargs) -> str:
+def process(url: str, brief_len: int=4096, **kwargs) -> str:
     """处理网页内容"""
 
     adapter_cls: model.SiteAdapterBase = model.SiteAdapterBase
@@ -31,15 +32,6 @@ def process(url: str, brief_len: int, **kwargs) -> str:
 
     # 处理成纯文本
 
-    text: str = ""
-
-    if processed.get('status', 200) == 200:
-        if 'content' not in processed:
-            text = processed.get('message', "nothing found")
-        else:
-            text += ('title: '+processed['content']['title']+"\n") if 'title' in processed['content'] else ''
-            text += '\n'.join(processed['content'].get('briefs', []))
-    else:
-        raise Exception(processed.get('message', "error"))
+    text = json.dumps(processed, ensure_ascii=False)
 
     return text

@@ -25,11 +25,10 @@ class GithubRepoSiteAdapter(SiteAdapterBase):
                 status_code=status_code,
                 message="error"
             )
+            
+        metas = cls.get_meta(raw_html)
 
         soup = BeautifulSoup(raw_html, 'html.parser')
-        title = soup.title.string
-
-        briefs = []
 
         raw = soup.get_text()
 
@@ -68,14 +67,23 @@ class GithubRepoSiteAdapter(SiteAdapterBase):
         Education
         By Solution
         CI/CD & Automation"""
+        
+        del_spt = delete.split('\n')
+        
+        for i in del_spt:
+            raw = re.sub(i, '', raw)
 
-        raw = re.sub(delete, '', raw)
+        # strip每一行
+        raw = '\n'.join([line.strip() for line in raw.split('\n')])
 
-        briefs.append("brief raw: "+raw)
+        # 删除所有空行或只有空格的行
+        raw = re.sub(r'\n\s*\n', '\n', raw)
+        
+        if len(raw) > brief_len:
+            raw = raw[:brief_len] + "..."
 
         return cls.make_ret(
             status_code=status_code,
-            message="ok",
-            title=title,
-            briefs=briefs
+            content=raw,
+            **metas
         )

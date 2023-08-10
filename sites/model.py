@@ -66,6 +66,41 @@ class SiteAdapterBase:
         )
         
         return r.status_code, r.text
+    
+    @classmethod
+    def get_meta(cls, raw_html: str) -> str:
+        """获取网页的meta标签内容"""
+        
+        soup = BeautifulSoup(raw_html, 'html.parser')
+        
+        # keywords
+        keywords = soup.find('meta', attrs={'name': 'keywords'})
+        
+        # og:title
+        og_title = soup.find('meta', attrs={'property': 'og:title'})
+        
+        # og:description
+        og_description = soup.find('meta', attrs={'property': 'og:description'})
+        
+        # og:type
+        og_type = soup.find('meta', attrs={'property': 'og:type'})
+        
+        # og:site_name
+        og_site_name = soup.find('meta', attrs={'property': 'og:site_name'})
+        
+        # og:url
+        og_url = soup.find('meta', attrs={'property': 'og:url'})
+        
+        ret = {
+            "keywords": keywords['content'] if keywords else '',
+            "og_title": og_title['content'] if og_title else '',
+            "og_description": og_description['content'] if og_description else '',
+            "og_type": og_type['content'] if og_type else '',
+            "og_site_name": og_site_name['content'] if og_site_name else '',
+            "og_url": og_url['content'] if og_url else '',
+        }
+        
+        return ret
 
     @classmethod
     def extra_plain(cls, raw_html: str) -> str:
@@ -108,18 +143,26 @@ class SiteAdapterBase:
     def make_ret(
         cls,
         status_code: int=200,
-        message: str='ok',
-        title: str='',
-        briefs: list[str]=[]
+        keywords: str='',
+        og_title: str='',
+        og_description: str='',
+        og_type: str='',
+        og_site_name: str='',
+        author: str='',
+        content: str='',
+        **kwargs
     ):
         """生成返回的字典"""
         return {
-            "status": status_code,
-            "message": message,
-            "content": {
-                "title": title,
-                "briefs": briefs
-            }
+            "status_code": status_code,
+            "keywords": keywords,
+            "og_title": og_title,
+            "og_description": og_description,
+            "og_type": og_type,
+            "og_site_name": og_site_name,
+            "author": author,
+            "content": content,
+            **kwargs
         }
 
     @classmethod
@@ -128,21 +171,19 @@ class SiteAdapterBase:
         status_code, raw_html = cls.get_html(url)
         if status_code != 200:
             return {
-                "status": status_code,
+                "status_code": status_code,
                 "message": "error status code: "+str(status_code)
             }
 
         plain = cls.extra_plain(raw_html)
-        title = cls.extra_title_element(raw_html)
 
         if len(plain) >= brief_len:
             plain = plain[:brief_len]
+            
+        metas = cls.get_meta(raw_html)
 
-        return {
-            "status": status_code,
-            "message": "ok",
-            "content": {
-                "title": title,
-                "briefs": [plain]
-            }
-        }
+        return cls.make_ret(
+            status_code=status_code,
+            content=plain,
+            **metas,
+        )
