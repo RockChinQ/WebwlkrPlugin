@@ -48,8 +48,6 @@ class WebwlkrPlugin(Plugin):
         - If you need to search somthing, visit https://www.sogou.com/web?query=<something>.
         - If user ask you to open a url (start with http:// or https://), visit it directly.
         - Summary the plain content result by yourself, DO NOT directly output anything in the result you got.
-        Returns: {"type": "object","properties": {"status_code": {"type": "integer","description": "The status code of the response."},"keywords": {"type": "string","description": "The keywords of the web page."},"og_title": {"type": "string","description": "The title of the web page."},"og_description": {"type": "string","description": "The description of the web page."},"og_type": {"type": "string","description": "The type of the web page."},"og_site_name": {"type": "string","description": "The site name of the web page."},"author": {"type": "string","description": "The author of the web page."},"content": {"type": "string","description": "The content of the web page to be summarized."}}}
-
 
         Args:
             url(str): url to visit
