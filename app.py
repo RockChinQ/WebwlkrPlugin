@@ -10,6 +10,9 @@ if __name__ == "__main__":
 
     # 仅支持native算法
     from sites import mux
+    
+    # 激活适配器
+    import sites.github
 
     # 检查server.yaml是否存在
     if not os.path.exists("server.yaml"):
@@ -35,6 +38,11 @@ if __name__ == "__main__":
     def openapi_yaml():
         # 发送static/openapi.yaml
         return flask.send_from_directory("static", "openapi.yaml")
+    
+    @app.route("/legal_info.html")
+    def legal_info_html():
+        # 发送static/legal_info.html
+        return flask.send_from_directory("static", "legal_info.html")
 
     @app.route("/logo.png")
     def logo_png():
